@@ -3,7 +3,19 @@
 [Pinboard](http://pinboard.in/) client for hackers.
 
 
-# Screenshots
+## Installation
+
+The installation process is extremely easy and you won't have any problems with dependencies, since there are no dependencies.
+
+```bash
+$ git clone git://github.com/nathanpc/pinned.git
+$ cd pinned
+$ make
+$ sudo make install
+```
+
+
+## Screenshots
 
 This is how the command-line version looks:
 
