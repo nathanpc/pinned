@@ -1,11 +1,12 @@
-CXX = g++
-CXXFLAGS = -Wall -pthread -I./src/jsoncpp
-OBJ = src/pinned.o src/jsoncpp/jsoncpp.o
+CXX = clang++
+CXXFLAGS = -Wall -pthread -Isrc/jsoncpp
+LDFLAGS = $(shell curl-config --libs)
+OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o
 
 all: pinned
 
 pinned: $(OBJ)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 debug: CXXFLAGS += -g3 -DDEBUG
 debug: pinned
