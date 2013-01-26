@@ -33,6 +33,7 @@ class Request {
 		
 		void list_posts();
 		void add_post(int argc, char *argv[]);
+		void delete_post(const char *url);
 };
 
 #endif

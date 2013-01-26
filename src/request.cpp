@@ -160,7 +160,21 @@ void Request::add_post(int argc, char *argv[]) {
 	string response = get("/posts/add", params);
 	if (parse_json(response)["result_code"].asString() == "done" ) {
 		cout << GREEN << "Bookmarked" << RESET << endl;
+	} else {
+		cout << RED << "Something went wrong" << RESET << endl;
 	}
+}
+
+void Request::delete_post(const char *url) {
+	vector<string> params;
+	params.push_back(string("url=") + url);
+	
+	string response = get("/posts/delete", params);
+	if (parse_json(response)["result_code"].asString() == "done" ) {
+		cout << GREEN << "Bookmark deleted" << RESET << endl;
+	} else {
+		cout << RED << "Something went wrong" << RESET << endl;
+ 	}
 }
 
 void str_replace(string &str, const string &from, const string &to) {

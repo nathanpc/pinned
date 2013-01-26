@@ -47,6 +47,13 @@ void handle_arguments(int argc, char *argv[]) {
 				cerr << "Usage: pinned --delete <url>";
 				exit(1);
 			}
+			
+			request.set_auth_token(config.load_auth_token());
+			request.delete_post(argv[2]);
+		} else {
+			cerr << RED << "Unknown argument: " << argv[1] << RESET << endl;
+			// TODO: Display usage.
+			exit(1);
 		}
 	} else {
 		// No arguments.
