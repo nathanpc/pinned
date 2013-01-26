@@ -20,6 +20,17 @@ using namespace std;
 Config config;
 Request request;
 
+void print_usage() {
+	cout << BOLD << "Usage: " << RESET << "pinned [--auth | --all | --add | --delete | --help] [params]" << endl << endl;
+	
+	cout << BOLD << "Commands:" << RESET << endl;
+	cout << "    --auth \t Authenticate with Pinboard" << endl;
+	cout << "    --all \t List all your bookmarks" << endl;
+	cout << "    --add \t Add a new bookmark" << endl;
+	cout << "    --delete \t Delete a bookmark" << endl;
+	cout << "    --help \t This" << endl;
+}
+
 void handle_arguments(int argc, char *argv[]) {
 	if (argc > 1) {
 		if (strcmp(argv[1], "--auth") == 0) {
@@ -50,9 +61,11 @@ void handle_arguments(int argc, char *argv[]) {
 			
 			request.set_auth_token(config.load_auth_token());
 			request.delete_post(argv[2]);
+		} else if (strcmp(argv[1], "--help") == 0) {
+			print_usage();
 		} else {
 			cerr << RED << "Unknown argument: " << argv[1] << RESET << endl;
-			// TODO: Display usage.
+			print_usage();
 			exit(1);
 		}
 	} else {
