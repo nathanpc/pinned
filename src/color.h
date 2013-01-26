@@ -2,6 +2,8 @@
 #define COLOR_H_
 
 #define RESET   "\033[0m"
+#define BOLD	"\033[1m"
+#define UNDERSCORE	"\033[4m"
 #define BLACK   "\033[30m"      /* Black */
 #define RED     "\033[31m"      /* Red */
 #define GREEN   "\033[32m"      /* Green */
@@ -17,6 +19,6 @@
 #define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
 #define BOLDMAGENTA "\033[1m\033[35m"      /* Bold Magenta */
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
-#define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
+#define BOLDWHITE   "\033[0m\033[1m"      /* Bold White */
 
 #endif

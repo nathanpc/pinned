@@ -6,19 +6,22 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <cstdlib>
 #include <cstdio>
 #include <curl/curl.h>
+#include <json/json.h>
 
 #include "request.h"
 #include "config.h"
+#include "color.h"
 using namespace std;
 
 Request::Request() {
 	pinboard_server = "https://api.pinboard.in/v1";
 }
 
-void Request::set_api_token(string _auth_token) {
+void Request::set_auth_token(string _auth_token) {
 	auth_token = _auth_token;
 }
 
@@ -54,8 +57,32 @@ string Request::raw_get(string url) {
 	return response;
 }
 
-string Request::get(string params) {
-	return raw_get(pinboard_server + params + "?auth_token=" + auth_token);
+string Request::get(string path) {
+	return raw_get(pinboard_server + path + "?auth_token=" + auth_token + "&format=json");
+}
+
+string Request::get(string path, vector<string> params) {
+	string final_url = pinboard_server + path + "?auth_token=" + auth_token + "&format=json";
+	for (size_t i = 0; i < params.size(); i++) {
+		final_url += "&";
+		final_url += params.at(i);
+	}
+
+	return raw_get(final_url);
+}
+
+Json::Value Request::parse_json(string response) {
+	Json::Value root;
+	Json::Reader reader;
+	if (reader.parse(response, root)) {
+		return root;
+	} else {
+		cout << "Server Response: " << response << endl;
+		cerr << RED << "Something went wrong while trying to parse the response from the server:" << RESET << endl;
+		cerr << reader.getFormattedErrorMessages() << endl;
+	
+		exit(1);
+	}
 }
 
 void Request::authenticate(string username, string password) {
@@ -69,23 +96,46 @@ void Request::authenticate(string username, string password) {
 	}
 
 	// Parse the response JSON.
-	Json::Value root;
-	Json::Reader reader;
-	if (reader.parse(response, root)) {
-		// Save the authentication token to a file.
-		string auth_token = root.get("result", "").asString();
-		if (!auth_token.empty()) {
-			config.save_auth_token(username, auth_token);
-			cout << "Authentication token saved to ~/.pinboard_token" << endl;
-		} else {
-			cerr << RED << "Couldn't get the authentication token from the JSON response." << RESET << endl;
-			exit(1);
-		}
+	Json::Value json = parse_json(response);
+	// Save the authentication token to a file.
+	string auth_token = json.get("result", "").asString();
+	if (!auth_token.empty()) {
+		config.save_auth_token(username, auth_token);
+		cout << "Authentication token saved to ~/.pinboard_token" << endl;
 	} else {
-		cout << "Server Response: " << response << endl;
-		cerr << RED << "Something went wrong while trying to parse the response from the server:" << RESET << endl;
-		cerr << reader.getFormattedErrorMessages() << endl;
-
+		cerr << RED << "Couldn't get the authentication token from the JSON response." << RESET << endl;
 		exit(1);
+	}
+}
+
+void Request::list_posts() {
+	string posts = get("/posts/all");
+	
+	// Parse the response JSON.
+	Json::Value json = parse_json(posts);
+	for (unsigned int i = 0; i < json.size(); i++) {
+		Json::Value post = json[i];
+	
+		// Display title.
+		cout << i + 1 << ". ";
+		if (post["toread"].asString() == "yes") {
+			cout << BOLDRED;
+		} else {
+			cout << BOLD;
+		}
+		cout << post["description"].asString() << RESET << endl;
+		
+		// Display description text.
+		string extended = post.get("extended", "").asString();
+		if (!extended.empty()) {
+			cout << "    " << extended << endl;
+		}
+		
+		// Display URL.
+		cout << "    " << CYAN << UNDERSCORE << post["href"].asString() << RESET << endl;
+		
+		if (i + 1 != json.size()) {
+			cout << endl;
+		}
 	}
 }

@@ -9,6 +9,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstring>
+#include <json/json.h>
 
 #include "request.h"
 #include "config.h"
@@ -28,10 +29,15 @@ void handle_arguments(int argc, char *argv[]) {
 			}
 
 			Request::authenticate(string(argv[2]), string(argv[3]));
+		} else if (strcmp(argv[1], "--all") == 0) {
+			// List all the posts.
+			request.set_auth_token(config.load_auth_token());
+			request.list_posts();
 		}
 	} else {
 		// No arguments.
-		request.set_api_token(config.load_auth_token());
+		request.set_auth_token(config.load_auth_token());
+		request.list_posts();
 	}
 }
 
