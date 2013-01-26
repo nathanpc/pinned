@@ -2,6 +2,7 @@ CXX = clang++
 CXXFLAGS = -Wall -Isrc/jsoncpp
 LDFLAGS = -pthread $(shell curl-config --libs)
 OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o
+PREFIX = /usr/local
 
 all: pinned
 
@@ -18,3 +19,11 @@ clean:
 	rm -rf src/*.o
 	rm -rf src/jsoncpp/*.o
 	rm -rf pinned
+
+install: pinned
+	chmod a+x ./pinned
+	install ./pinned $(PREFIX)/bin
+
+uninstall:
+	rm -f $(PREFIX)/bin/pinned
+	rm -f ~/.pinboard_token
