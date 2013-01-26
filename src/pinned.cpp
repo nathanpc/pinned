@@ -6,6 +6,7 @@
  */
  
 #include <iostream>
+#include <vector>
 #include <string>
 #include <cstdlib>
 #include <cstring>
@@ -33,6 +34,16 @@ void handle_arguments(int argc, char *argv[]) {
 			// List all the posts.
 			request.set_auth_token(config.load_auth_token());
 			request.list_posts();
+		} else if (strcmp(argv[1], "--add") == 0) {
+			if (argc < 2) {
+				cerr << "Usage: pinned --add <url> [title] [description] [tags]";
+				exit(1);
+			}
+			
+			request.set_auth_token(config.load_auth_token());
+			request.add_post(argc, argv);
+		} else if (strcmp(argv[1], "--delete") == 0) {
+			// TODO: Implement this.
 		}
 	} else {
 		// No arguments.

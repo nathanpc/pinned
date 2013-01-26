@@ -29,8 +29,10 @@ class Request {
 		std::string get(std::string path, std::vector<std::string> params);
 
 		static Json::Value parse_json(std::string response);
+		static void urlencode_vector(std::vector<std::string> &params);
 		
 		void list_posts();
+		void add_post(int argc, char *argv[]);
 };
 
 #endif

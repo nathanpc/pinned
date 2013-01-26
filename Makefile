@@ -1,6 +1,6 @@
 CXX = clang++
-CXXFLAGS = -Wall -pthread -Isrc/jsoncpp
-LDFLAGS = $(shell curl-config --libs)
+CXXFLAGS = -Wall -Isrc/jsoncpp
+LDFLAGS = -pthread $(shell curl-config --libs)
 OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o
 
 all: pinned

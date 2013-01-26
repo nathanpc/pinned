@@ -63,6 +63,8 @@ string Request::get(string path) {
 
 string Request::get(string path, vector<string> params) {
 	string final_url = pinboard_server + path + "?auth_token=" + auth_token + "&format=json";
+
+	urlencode_vector(params);
 	for (size_t i = 0; i < params.size(); i++) {
 		final_url += "&";
 		final_url += params.at(i);
@@ -137,5 +139,44 @@ void Request::list_posts() {
 		if (i + 1 != json.size()) {
 			cout << endl;
 		}
+	}
+}
+
+void Request::add_post(int argc, char *argv[]) {
+	vector<string> param_keys;
+	param_keys.push_back("url=");
+	param_keys.push_back("description=");
+	param_keys.push_back("extended=");
+	param_keys.push_back("tags=");
+	
+	vector<string> params;
+	for (size_t i = 0; i < (argc - 2); i++) {
+		string final_param = param_keys.at(i);
+		final_param += argv[i + 2];
+	
+		params.push_back(final_param);
+	}
+	
+	string response = get("/posts/add", params);
+	if (parse_json(response)["result_code"].asString() == "done" ) {
+		cout << GREEN << "Bookmarked" << RESET << endl;
+	}
+}
+
+void str_replace(string &str, const string &from, const string &to) {
+	if (from.empty()) {
+		return;
+	}
+
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length();
+	}
+}
+
+void Request::urlencode_vector(vector<string> &params) {
+	for (size_t i = 0; i < params.size(); i++) {
+		str_replace(params.at(i), " ", "+");
 	}
 }
