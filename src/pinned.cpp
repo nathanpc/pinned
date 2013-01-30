@@ -44,10 +44,12 @@ void handle_arguments(int argc, char *argv[]) {
 		} else if (strcmp(argv[1], "--all") == 0) {
 			// List all the posts.
 			request.set_auth_token(config.load_auth_token());
-			if (argc == 2)
-			  request.list_posts();
-			else
-			  request.list_posts(atoi(argv[2]));
+
+			if (argc == 2) {
+				request.list_posts();
+			} else {
+				request.list_posts(atoi(argv[2]));
+			}
 		} else if (strcmp(argv[1], "--add") == 0) {
 			if (argc < 3) {
 				cerr << "Usage: pinned --add <url> <title> [description] [tags]";

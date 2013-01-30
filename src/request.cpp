@@ -111,18 +111,20 @@ void Request::authenticate(string username, string password) {
 	}
 }
 
-void Request::list_posts(int nbPosts) {
+void Request::list_posts(int limit) {
 	string posts;
-	if (nbPosts)
-	{
-	  stringstream tmp;
-	  tmp << "results=" << nbPosts;
-	  vector<string> params;
-	  params.push_back(tmp.str());
-	  posts = get("/posts/all", params);
+
+	if (limit) {
+		stringstream tmp;
+		tmp << "results=" << limit;
+
+		vector<string> params;
+		params.push_back(tmp.str());
+
+		posts = get("/posts/all", params);
+	} else {
+		posts = get("/posts/all");
 	}
-	else
-	  posts = get("/posts/all");
 
 	// Parse the response JSON.
 	Json::Value json = parse_json(posts);
