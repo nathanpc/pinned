@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <cstdlib>
@@ -82,7 +83,7 @@ Json::Value Request::parse_json(string response) {
 		cout << "Server Response: " << response << endl;
 		cerr << RED << "Something went wrong while trying to parse the response from the server:" << RESET << endl;
 		cerr << reader.getFormattedErrorMessages() << endl;
-	
+
 		exit(1);
 	}
 }
@@ -110,14 +111,24 @@ void Request::authenticate(string username, string password) {
 	}
 }
 
-void Request::list_posts() {
-	string posts = get("/posts/all");
-	
+void Request::list_posts(int nbPosts) {
+	string posts;
+	if (nbPosts)
+	{
+	  stringstream tmp;
+	  tmp << "results=" << nbPosts;
+	  vector<string> params;
+	  params.push_back(tmp.str());
+	  posts = get("/posts/all", params);
+	}
+	else
+	  posts = get("/posts/all");
+
 	// Parse the response JSON.
 	Json::Value json = parse_json(posts);
 	for (unsigned int i = 0; i < json.size(); i++) {
 		Json::Value post = json[i];
-	
+
 		// Display title.
 		cout << i + 1 << ". ";
 		if (post["toread"].asString() == "yes") {
@@ -126,16 +137,16 @@ void Request::list_posts() {
 			cout << BOLD;
 		}
 		cout << post["description"].asString() << RESET << endl;
-		
+
 		// Display description text.
 		string extended = post.get("extended", "").asString();
 		if (!extended.empty()) {
 			cout << "    " << extended << endl;
 		}
-		
+
 		// Display URL.
 		cout << "    " << CYAN << UNDERSCORE << post["href"].asString() << RESET << endl;
-		
+
 		if (i + 1 != json.size()) {
 			cout << endl;
 		}
@@ -148,15 +159,15 @@ void Request::add_post(int argc, char *argv[]) {
 	param_keys.push_back("description=");
 	param_keys.push_back("extended=");
 	param_keys.push_back("tags=");
-	
+
 	vector<string> params;
 	for (size_t i = 0; i < (argc - 2); i++) {
 		string final_param = param_keys.at(i);
 		final_param += argv[i + 2];
-	
+
 		params.push_back(final_param);
 	}
-	
+
 	string response = get("/posts/add", params);
 	if (parse_json(response)["result_code"].asString() == "done" ) {
 		cout << GREEN << "Bookmarked" << RESET << endl;
@@ -168,7 +179,7 @@ void Request::add_post(int argc, char *argv[]) {
 void Request::delete_post(const char *url) {
 	vector<string> params;
 	params.push_back(string("url=") + url);
-	
+
 	string response = get("/posts/delete", params);
 	if (parse_json(response)["result_code"].asString() == "done" ) {
 		cout << GREEN << "Bookmark deleted" << RESET << endl;

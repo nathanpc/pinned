@@ -30,8 +30,8 @@ class Request {
 
 		static Json::Value parse_json(std::string response);
 		static void urlencode_vector(std::vector<std::string> &params);
-		
-		void list_posts();
+
+		void list_posts(int nbPosts = 0);
 		void add_post(int argc, char *argv[]);
 		void delete_post(const char *url);
 };
