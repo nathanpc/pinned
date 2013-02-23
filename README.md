@@ -5,7 +5,7 @@
 
 ## Installation
 
-The installation process is extremely easy and you won't have any problems with dependencies, since there are no dependencies.
+The installation process is extremely easy and you won't have any problems with dependencies, since there are almost no dependencies, the only one is [libcurl](http://curl.haxx.se/libcurl/).
 
 ```bash
 $ git clone git://github.com/nathanpc/pinned.git
