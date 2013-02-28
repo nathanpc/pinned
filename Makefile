@@ -1,7 +1,7 @@
 CXX = clang++
 CXXFLAGS = -Wall -Isrc/jsoncpp
 LDFLAGS = -pthread $(shell curl-config --libs)
-OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o
+OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o src/libinet/uri.o src/libinet/sockets.o src/libinet/http.o
 PREFIX = /usr/local
 
 all: pinned

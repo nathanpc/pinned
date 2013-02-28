@@ -12,6 +12,8 @@
 #include <cstdio>
 #include <curl/curl.h>
 #include <json/json.h>
+#include "libinet/uri.h"
+#include "libinet/http.h"
 
 #include "request.h"
 #include "config.h"
@@ -32,30 +34,14 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
 }
 
 string Request::raw_get(string url) {
-	CURL *curl;
-	CURLcode res;
-	string response;
+	URI uri(url);
+	HTTP http(uri);
+    HTTP_Response response;
 
-	curl = curl_easy_init();
-	if (curl) {
-		// Setup cURL.
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    http.add_header("User-Agent", "Pinned/0.2");
+    response = http.request("GET");
 
-		// Perform request.
-		res = curl_easy_perform(curl);
-
-		// Check for errors.
-		if (res != CURLE_OK) {
-			cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
-		}
-
-		// Cleanup cURL shit.
-		curl_easy_cleanup(curl);
-	}
-
-	return response;
+	return response.body;
 }
 
 string Request::get(string path) {
