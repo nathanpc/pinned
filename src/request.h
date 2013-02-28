@@ -24,6 +24,7 @@ class Request {
 		static void authenticate(std::string username, std::string password);
 		void set_auth_token(std::string _auth_token);
 
+		static std::string raw_get(std::string url, std::vector<std::vector<std::string> > headers);
 		static std::string raw_get(std::string url);
 		std::string get(std::string path);
 		std::string get(std::string path, std::vector<std::string> params);

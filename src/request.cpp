@@ -10,8 +10,10 @@
 #include <vector>
 #include <cstdlib>
 #include <cstdio>
-#include <curl/curl.h>
+#include <cstring>
 #include <json/json.h>
+
+#include "base64/base64.h"
 #include "libinet/uri.h"
 #include "libinet/http.h"
 
@@ -33,15 +35,23 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
 	return size * count;
 }
 
-string Request::raw_get(string url) {
+string Request::raw_get(string url, vector<vector<string> > headers) {
 	URI uri(url);
 	HTTP http(uri);
     HTTP_Response response;
 
     http.add_header("User-Agent", "Pinned/0.2");
-    response = http.request("GET");
+    for (size_t i = 0; i < headers.size(); i++) {
+    	http.add_header(headers.at(i).at(0), headers.at(i).at(1));
+    }
 
+    response = http.request("GET");
 	return response.body;
+}
+
+string Request::raw_get(string url) {
+	vector<vector<string> > headers;
+	return raw_get(url, headers);
 }
 
 string Request::get(string path) {
@@ -76,7 +86,15 @@ Json::Value Request::parse_json(string response) {
 
 void Request::authenticate(string username, string password) {
 	Config config;
-	string response = Request::raw_get("https://" + username + ":" + password + "@api.pinboard.in/v1/user/api_token/?format=json");
+	vector<vector<string> > header;
+	vector<string> auth_header;
+	string auth_str = username + ":" + password;
+
+	auth_header.push_back("Authorization");
+	auth_header.push_back("Basic " + string(Base64::encode(auth_str.c_str(), strlen(auth_str.c_str()))));
+
+	header.push_back(auth_header);
+	string response = Request::raw_get("https://api.pinboard.in/v1/user/api_token/?format=json", header);
 
 	// Check you actually got authenticated.
 	if (response == "401 Forbidden") {

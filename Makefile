@@ -1,7 +1,7 @@
 CXX = clang++
 CXXFLAGS = -Wall -Isrc/jsoncpp
-LDFLAGS = -pthread $(shell curl-config --libs)
-OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o src/libinet/uri.o src/libinet/sockets.o src/libinet/http.o
+LDFLAGS = -pthread
+OBJ = src/pinned.o src/request.o src/config.o src/jsoncpp/jsoncpp.o src/base64/base64.o src/libinet/uri.o src/libinet/sockets.o src/libinet/http.o
 PREFIX = /usr/local
 
 all: pinned
@@ -18,6 +18,8 @@ debug: pinned
 clean:
 	rm -rf src/*.o
 	rm -rf src/jsoncpp/*.o
+	rm -rf src/libinet/*.o
+	rm -rf src/base64/*.o
 	rm -rf pinned
 
 install: pinned
