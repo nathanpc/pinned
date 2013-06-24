@@ -115,6 +115,15 @@ void Request::authenticate(string username, string password) {
 	}
 }
 
+void Request::authenticate(string _auth_token) {
+	Config config;
+	string username = _auth_token.substr(0, _auth_token.find(":"));
+	string token = _auth_token.substr(_auth_token.find(":") + 1);
+
+	config.save_auth_token(username, token);
+	cout << "Authentication token saved to ~/.pinboard_token" << endl;
+}
+
 void Request::list_posts(int limit) {
 	string posts;
 
